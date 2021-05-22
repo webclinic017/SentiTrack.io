@@ -1,3 +1,4 @@
 .DS_Store
 .tracker/
 .vscode/
+src/__pycache__/
