@@ -1,6 +1,4 @@
-from os import wait
 import Scraper, Classifier
-from CustomTransformer import cleanText, TextCleaner
 import time
 
 class UI :
