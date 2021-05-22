@@ -38,6 +38,7 @@ class Scraper :
         """
         Takes in url and returns list of comments or Error
         """
+        
         url = self.__getCurrentDiscussionThreadURL()
         if url == "ERROR":
             return url
