@@ -33,12 +33,14 @@ class Scraper :
             except: KeyError
         return comments
     
-    def getRequestResponse(self, url):
+    def getRequestResponse(self):
 
         """
         Takes in url and returns list of comments or Error
         """
-
+        url = self.__getCurrentDiscussionThreadURL()
+        if url == "ERROR":
+            return url
         req_data = requests.get(url, headers={'User-agent': 'rtst.com'})
         if req_data.status_code == 200:
             json_data = req_data.json()
