@@ -3,7 +3,7 @@ import time
 
 class UI :
 
-    def run(self):
+    def textUI(self):
 
         """
         Simple text visualization of sentiment over time
