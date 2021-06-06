@@ -12,10 +12,11 @@ class DateTimeRangeMap:
         min = datetime.timedelta(minutes = interval)
         if historical:
             it = datetime.timedelta(minutes = interval - 1)
-            end_range = [now - (min * i) for i in range(0, 60//interval)][::-1]
+            num_intervals = int(60/interval)
+            end_range = [now - (min * i) for i in range(0, num_intervals)][::-1]
             last = now - it
-            start_range = [last- (min * i) for i in range(0, 60//interval)][::-1]
-            self.range_map = [(x,y) for x,y in zip(start_range, end_range)]
+            start_range = [last- (min * i) for i in range(0, num_intervals)][::-1]
+            self.range_map = [[(x,y), []] for x,y in zip(start_range, end_range)]
         else:
             start = now - min
             self.range_map = [[(start, now), []]]
@@ -39,4 +40,7 @@ class DateTimeRangeMap:
             else:
                 start = mid + 1
         return -1
+
+    def getRangeMap(self):
+        return self.range_map
 
