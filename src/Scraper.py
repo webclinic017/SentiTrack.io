@@ -2,7 +2,6 @@ import requests
 import datetime
 import time
 from DateTimeRangeMap import DateTimeRangeMap
-from concurrent.futures import ThreadPoolExecutor
 import threading
 
 class Scraper :
@@ -86,11 +85,11 @@ class Scraper :
             req_data = response.json()
             try :
                 data = req_data['data']['children'][0]['data']
-                time = int(data['created_utc'])
-                time = datetime.datetime.fromtimestamp(time).replace(second = 0, microsecond = 0)
                 comment = data['body']
                 if comment == '[removed]':
                     return
+                time = int(data['created_utc'])
+                time = datetime.datetime.fromtimestamp(time).replace(second = 0, microsecond = 0)
                 range_map.insert(time, comment)
             except:
                 pass
