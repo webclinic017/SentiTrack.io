@@ -47,6 +47,8 @@ class Scraper :
                 extra_comments_ids  = [c for c in children]  
             else :
                 try:
+                    if child['kind'] == 'more' and not historical:
+                        break
                     comment = child['data']['body']
                     if comment == '[removed]':
                         continue
@@ -54,7 +56,8 @@ class Scraper :
                     time = datetime.datetime.fromtimestamp(time).replace(second = 0, microsecond = 0)
                     range_map.insert(time, comment)              
                 except: KeyError
-        range_map = self.__makeRequestsForExtraComments(extra_comments_ids, range_map)
+        if historical:
+            range_map = self.__makeRequestsForExtraComments(extra_comments_ids, range_map)
         return range_map
     
     def getRequestResponse(self, time, historical = False):
@@ -71,7 +74,7 @@ class Scraper :
             json_data = req_data.json()
             return self.__getComments(json_data, time, historical)
         else:
-            return "ERROR"
+            return None
 
 
     def __updateMap(self, url, range_map):
