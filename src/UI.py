@@ -1,25 +1,54 @@
 import Scraper, Classifier
+import art
+import datetime
 import time
 
 class UI :
 
-    def textUI(self):
+    def __init__(self, model_path):
+        self.s = Scraper.Scraper()
+        self.text_classifier = Classifier.Classifier(model_path)
+
+    def __formatPrint(self, predictions):
+        for t in sorted(predictions):
+            print("%40s %20s" % (t,"%.2f" % predictions[t]))
+
+    def run(self):
 
         """
         Simple text visualization of sentiment over time
         """
-        s = Scraper.Scraper()
-        text_classifier = Classifier.Classifier("Model/model.pk")
-        print("%20s %20s" % ("Time", "Sentiment"))
-        while True:
-            now = time.strftime("%H:%M:%S")
-            comments = s.getRequestResponse()
-            if comments == "ERROR":
-                time.sleep(3)
+
+        print(art.text2art("SENTIMENT ANALYSIS", font="small"))
+        print ("========================================================================================================")
+        print ("========================================================================================================")
+        # print("Fetching past hour data. Please be patient...")
+        # t = datetime.datetime.now()
+        # past_hour_data = self.s.getRequestResponse(t, historical=True).getRangeMap()
+        # if past_hour_data is None:
+        #     print("No past hour data available.")
+        # predictions = self.text_classifier.getSentiment(past_hour_data)
+        # print("%40s %20s" % ("Time", "Sentiment"))
+        # self.__formatPrint(predictions)
+        while (True):
+            time.sleep(5)
+            t = datetime.datetime.now()
+            data = self.s.getRequestResponse(t).getRangeMap()
+            if data is None:
                 continue
-            sentiment = text_classifier.getSentiment(comments)
-            print("%20s %20s" % (now, sentiment))
-            time.sleep(60)
+            predictions = self.text_classifier.getSentiment(data)
+            self.__formatPrint(predictions)
+        
+
+
+        
+            
+
+
+
+
+
+
 
 
 
