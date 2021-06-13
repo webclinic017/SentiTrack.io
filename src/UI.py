@@ -22,16 +22,15 @@ class UI :
         print(art.text2art("SENTIMENT ANALYSIS", font="small"))
         print ("========================================================================================================")
         print ("========================================================================================================")
-        # print("Fetching past hour data. Please be patient...")
-        # t = datetime.datetime.now()
-        # past_hour_data = self.s.getRequestResponse(t, historical=True).getRangeMap()
-        # if past_hour_data is None:
-        #     print("No past hour data available.")
-        # predictions = self.text_classifier.getSentiment(past_hour_data)
-        # print("%40s %20s" % ("Time", "Sentiment"))
-        # self.__formatPrint(predictions)
+        t = datetime.datetime.now()
+        past_hour_data = self.s.getRequestResponse(t, historical=True).getRangeMap()
+        if past_hour_data is None:
+            print("No past hour data available.")
+        predictions = self.text_classifier.getSentiment(past_hour_data)
+        print("%40s %20s" % ("Time", "Sentiment"))
+        self.__formatPrint(predictions)
         while (True):
-            time.sleep(5)
+            time.sleep(300)
             t = datetime.datetime.now()
             data = self.s.getRequestResponse(t).getRangeMap()
             if data is None:
