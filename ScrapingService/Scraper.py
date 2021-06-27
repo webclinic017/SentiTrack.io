@@ -3,6 +3,7 @@ import datetime
 import pymysql
 import pickle
 import json
+from bs4 import BeautifulSoup
 from CustomTransformer import TextCleaner, cleanText
 
 def getResponse(url):
@@ -85,31 +86,36 @@ def getSentiment(model_path, comments):
     sentiment = getScore(predictions)
     return sentiment
 
+def getMarketPrice():
+    url = "https://finance.yahoo.com/quote/SPY?p=SPY&.tsrc=fin-srch"
+    res = getResponse(url)
+    if res.status_code == 200:
+        soup = BeautifulSoup(res.text, 'lxml')
+        price = soup.find('span', {'data-reactid': '50'}).text
+        return price
+    else:
+        return None
+        
 if __name__ == "__main__":
-    with open('config.json') as f:
+    with open("ScrapingService/config.json") as f:
         data = json.load(f)
-    db = pymysql.connect(host = data['host'], 
-                         user = data['user'], 
-                         password = data['password'], 
-                         database = data['database'])
-    cursor = db.cursor()
+    market = getMarketPrice()
+    if market is not None:
+        market = float(market)
 
     time = datetime.datetime.now()
     url = getCurrentDiscussionThreadURL()
     req_data = getResponse(url)
     json_data = req_data.json()
     comments = getComments(json_data)
-    sentiment = getSentiment("model.pk", comments)
+    sentiment = getSentiment("ScrapingService/model.pk", comments)
 
-    cursor.execute('INSERT INTO WSB (LogTime, Sentiment) VALUES (%s, %s)', (time.strftime('%Y-%m-%d %H:%M:%S'), sentiment))
+    db = pymysql.connect(host = data['host'], 
+                         user = data['user'], 
+                         password = data['password'], 
+                         database = data['database'])
+    cursor = db.cursor()
+    cursor.execute('INSERT INTO WSB (LogTime, Sentiment, Market) VALUES (%s, %s, %s)', 
+                    (time.strftime('%Y-%m-%d %H:%M:%S'), sentiment, market))
     db.commit()
     db.close()
-
-
-
-
-
-
-        
-
-
