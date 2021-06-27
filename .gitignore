@@ -2,3 +2,4 @@
 .tracker/
 .vscode/
 src/__pycache__/
+config.json
