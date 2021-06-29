@@ -9,23 +9,6 @@ import plotly.graph_objects as go
 
 app = Flask(__name__, template_folder='templates')
 
-def getReturn(row):
-    # if negative sentiment, change negative, profit the negative 
-    # if positive sentiment, change positive, profit the positive
-    # if negative sentiment, change positive, lose the positive
-    # if positive sentiment, change negative, lose the negative
-
-    if row['Sentiment'] < 0 and row['pct_chg'] < 0:
-        return row['pct_chg']
-    elif row['Sentiment'] > 0 and row['pct_chg'] > 0:
-        return row['pct_chg']
-    elif row['Sentiment'] < 0 and row['pct_chg'] > 0:
-        return -1 * row['pct_chg']
-    elif row['Sentiment'] > 0 and row['pct_chg'] < 0:
-        return row['pct_chg']
-    else:
-        return 1
-
 @app.route("/performance")
 def getPerformance():
     cursor = db.cursor()
