@@ -1,5 +1,5 @@
 .DS_Store
 .tracker/
 .vscode/
-src/__pycache__/
+WebService/__pycache__/
 config.json
