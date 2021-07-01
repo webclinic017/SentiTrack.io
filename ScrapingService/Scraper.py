@@ -5,6 +5,7 @@ import pickle
 import json
 from bs4 import BeautifulSoup
 from CustomTransformer import TextCleaner, cleanText
+import threading
 
 def getResponse(url):
 
@@ -30,6 +31,41 @@ def getCurrentDiscussionThreadURL():
     url = base_url + json_response['data']['children'][0]['data']['permalink'] + ".json"
     return url
 
+def getMoreComments(url, comments):
+
+        """
+        Gets comment from url and updats list
+        """
+
+        response = getResponse(url)
+        if response.status_code == 200:
+            req_data = response.json()
+            try :
+                data = req_data['data']['children'][0]['data']
+                comment = data['body']
+                if comment == '[removed]':
+                    return
+                comments.append(comment)
+            except:
+                pass
+
+def makeRequestsForExtraComments(list_of_comment_ids, comments):
+
+        """
+        Creates thread for each comment id and fetches comment
+        """
+
+        base_url = "https://www.reddit.com/api/info.json?id=t1_"
+        urls = [base_url + id for id in list_of_comment_ids]
+
+        threads = [threading.Thread(target = getMoreComments, args=(url, comments)) for url in urls]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        return comments
+
+
 def getComments(json_response):
 
     """
@@ -37,24 +73,19 @@ def getComments(json_response):
     """
 
     comments = []
-    now = datetime.datetime.now().replace(second = 0, microsecond = 0)
-    ten_minute = datetime.timedelta(minutes = 10)
-    past = now - ten_minute
     children = json_response[1]['data']['children']
     for child in children:
         if child['kind'] == 'more':
-            return comments
+            children = child['data']['children']
+            extra_comment_ids  = [c for c in children] 
         else :
             try:
                 comment = child['data']['body']
                 if comment == '[removed]':
                     continue
-                time = int(child['data']['created_utc'])
-                time = datetime.datetime.fromtimestamp(time).replace(second = 0, microsecond = 0)
-                if (time < past):
-                    return  comments
                 comments.append(comment)      
             except: KeyError
+    makeRequestsForExtraComments(extra_comment_ids, comments)
     return comments
 
 def getScore(predictions):
@@ -108,6 +139,7 @@ if __name__ == "__main__":
     req_data = getResponse(url)
     json_data = req_data.json()
     comments = getComments(json_data)
+    print(len(comments))
     sentiment = getSentiment("ScrapingService/model.pk", comments)
 
     db = pymysql.connect(host = data['host'], 
