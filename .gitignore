@@ -3,3 +3,4 @@
 .vscode/
 WebService/__pycache__/
 config.json
+ScrapingService/__pycache__/
