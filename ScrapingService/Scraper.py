@@ -6,6 +6,7 @@ import json
 from bs4 import BeautifulSoup
 from CustomTransformer import TextCleaner, cleanText
 import threading
+from collections import Counter
 
 def getResponse(url):
 
@@ -126,6 +127,26 @@ def getMarketPrice():
         return price
     else:
         return None
+
+def getMentions(comments, tickers):
+
+    """
+    Return counts for all tickers mentioned
+    """
+
+    counts = {}
+    comments = [comment.upper() for comment in comments]
+    for comment in comments:
+        for t in tickers:
+            if t in comment.split():
+                if t in counts:
+                    counts[t] += 1
+                else:
+                    counts[t] = 1
+    counts = Counter(counts)
+    top = counts.most_common(5) 
+    return top
+
         
 if __name__ == "__main__":
     with open("ScrapingService/config.json") as f:
@@ -139,7 +160,7 @@ if __name__ == "__main__":
     req_data = getResponse(url)
     json_data = req_data.json()
     comments = getComments(json_data)
-    print(len(comments))
+
     sentiment = getSentiment("ScrapingService/model.pk", comments)
 
     db = pymysql.connect(host = data['host'], 
@@ -149,5 +170,24 @@ if __name__ == "__main__":
     cursor = db.cursor()
     cursor.execute('INSERT INTO WSB (LogTime, Sentiment, Market) VALUES (%s, %s, %s)', 
                     (time.strftime('%Y-%m-%d %H:%M:%S'), sentiment, market))
+
+    with open('ScrapingService/tickers.txt') as f:
+        tickers = list(f)
+        tickers = [x.rstrip() for x in tickers]
+
+    mentions = getMentions(comments, tickers)
+
+    cursor.execute('INSERT INTO MENTIONS (LogTime, Ticker1, Ticker1_Count, \
+                                                   Ticker2, Ticker2_Count, \
+                                                   Ticker3, Ticker3_Count, \
+                                                   Ticker4, Ticker4_Count, \
+                                                   Ticker5, Ticker5_Count) \
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
+                                                  (time.strftime('%Y-%m-%d %H:%M:%S'),
+                                                   mentions[0][0], mentions[0][1],
+                                                   mentions[1][0], mentions[1][1],
+                                                   mentions[2][0], mentions[2][1], 
+                                                   mentions[3][0], mentions[3][1],
+                                                   mentions[4][0], mentions[4][1]))
     db.commit()
     db.close()
