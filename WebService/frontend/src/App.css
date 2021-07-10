@@ -1,0 +1,51 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  font-size: 1.25rem;
+  font-family: "montserrat-medium", sans-serif;
+}
+
+section {
+  color: #fff;
+  text-align: center;
+}
+
+div {
+  height: 100%;
+}
+
+.container {
+  display: table;
+  width: 100%;
+}
+
+.left-half {
+  background-color: #1e1e1e;
+  position: absolute;
+  left: 0px;
+  width: 30%;
+}
+
+.right-half {
+  background-color: rgb(50, 50, 50);
+  position: absolute;
+  right: 0px;
+  width: 70%;
+}
+
+h1 {
+    color: #375CB1;
+    letter-spacing: 0.2rem;
+    margin-bottom: 5%;
+    padding-bottom: 5%;
+}
+
+h5 {
+  color: #FF0056;
+  letter-spacing: 0.2rem;
+}
+
+h2 {
+  color: white;
+}
