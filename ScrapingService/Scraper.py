@@ -145,7 +145,7 @@ def getMentions(comments, tickers):
                     counts[t] = 1
     counts = Counter(counts)
     top = counts.most_common(5) 
-    return json.dump(top)
+    return top
 
         
 if __name__ == "__main__":
