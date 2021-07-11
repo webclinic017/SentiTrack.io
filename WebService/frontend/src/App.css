@@ -11,20 +11,12 @@ section {
   text-align: center;
 }
 
-div {
-  height: 100%;
-}
-
-.container {
-  display: table;
-  width: 100%;
-}
-
 .left-half {
   background-color: #1e1e1e;
   position: absolute;
   left: 0px;
   width: 30%;
+  height: 100%;
 }
 
 .right-half {

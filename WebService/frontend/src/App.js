@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import Plot from 'react-plotly.js';
 
-function Statistics() {
-    axios.get('http://127.0.0.1:5000/performance').then(response => {
+function getPerformance(){
+  axios.get('http://127.0.0.1:5000/performance').then(response => {
       document.getElementById("returns").innerHTML = response.data['returns'] + "%";
       document.getElementById("accuracy").innerHTML = response.data['accuracy'] + "%";
     }).catch(error => {
       console.log(error)
     })
-    
+
     axios.get('http://127.0.0.1:5000/mentions').then(response => {
       document.getElementById("tick1").innerHTML = response.data['Ticker1'];
       document.getElementById("tick2").innerHTML = response.data['Ticker2'];
@@ -20,6 +20,10 @@ function Statistics() {
     }).catch(error => {
       console.log(error)
     })
+}
+
+function Statistics() {
+  getPerformance();
   return (
     <div className="left-half">
       <h1>SentiTrack.io</h1>
@@ -38,26 +42,63 @@ function Statistics() {
 }
 
 function Graph() {
+  const [data, setData] = useState({Time: [], Sentiment: [], Market: []});
+  useEffect(() => {
+    axios.get('http://127.0.0.1:5000/data').then(res => {
+       setData(res.data)
+    }).catch(err => console.log(err));
+  }, [])
+  var traces = [
+    {x:data.Time, 
+     y:data.Sentiment,
+     yaxis: 'y1',
+     line: {color: '#5E0DAC'},
+     name: "Sentiment",
+    }, 
+
+    {x:data.Time, 
+     y:data.Market,
+     yaxis: 'y2',
+     line: {color: '#FF4F00'},
+     name: "S&P500",
+    }
+  ]
   return (
     <Plot
-        data={[
-          {
-            x: [1, 2, 3],
-            y: [2, 6, 3],
-            type: 'scatter',
-            mode: 'lines',
-            name: 'sentiment',
-            line: {color: '#17BECF'}
-          },
-        ]}
+    data = {traces}
         layout = {{
+          autosize: false,
+          height: 724,
+          width: 1000,
           xaxis: {
-            autorange : true
+            autorange: true,
+            tickfont: {color: 'white'},
+            rangeslider: {},
+            showgrid: false,
           },
-          paper_bgcolor: "rgb(50, 50, 50)",
-          plot_bgcolor: "rgb(50, 50, 50)",
+          yaxis: {
+            title: 'Sentiment', 
+            side: 'left', 
+            linecolor: 'white', 
+            tickfont:{color:'white'}, 
+            color: 'white', 
+            autorange: true, 
+            showgrid: false,
+          },
+          yaxis2: {
+            title: 'S&P500 Price', 
+            side: 'right', 
+            overlaying: 'y', 
+            tickfont:{color:'white'}, 
+            color: 'white', 
+            autorange: true,
+            showgrid: false,
+          },
+          template: 'plotly_dark',
+          paper_bgcolor:'rgba(0, 0, 0, 0)',
+          plot_bgcolor:'rgba(0, 0, 0, 0)',
         }}
-      />
+    />
   )
 }
 
@@ -66,7 +107,7 @@ function App() {
     <section>
       <Statistics></Statistics>
       <div className="right-half">
-        <div id='chart'>
+        <div className='chart'>
           <Graph></Graph>
         </div>
       </div>
