@@ -1,6 +1,6 @@
 # Real-Time-Sentiment-Tracker
 
-A tool to track WallStreetBets' "general" market sentiment in real time. Use the data to make better or worse investing decisions. Happy gambling and I do not take any responsibilty for any bad trades made using this data =) 🚀🚀🚀🚀🚀
+A tool to track general market sentiment and performance over time. Use the data to make better or worse investing decisions. Happy gambling and I do not take any responsibilty for any bad trades made using this data =) 🚀🚀🚀🚀🚀
 
 # How to Run
 
